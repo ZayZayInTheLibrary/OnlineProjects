@@ -5,4 +5,5 @@ Just a simple repository for storying my projects produced in the library.
 
 ### 1-22-2025
 - [x] Create a new repository
-- [x] Create a new project
+- [] Create a new project
+- [] Understand Docker and Github repositories
