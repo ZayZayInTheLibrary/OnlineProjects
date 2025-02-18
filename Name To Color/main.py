@@ -18,4 +18,4 @@ nameAsciiSum = nameAsciiSum % 256
 nameAsciiDif = nameAsciiDif % 256
 nameAsciiMult = nameAsciiMult % 256
 
-print(nameAsciiSum, nameAsciiDif, nameAsciiMult)
+print(f"RGB: {nameAsciiSum, nameAsciiDif, nameAsciiMult}")
