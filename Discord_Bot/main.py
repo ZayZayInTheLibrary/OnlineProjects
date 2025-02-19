@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 load_dotenv()
 
-token = os.getenv('DISCORD_TOKEN')
+token = os.getenv('DISC_TOKEN')
 
 
 intents = discord.Intents.default()
@@ -15,4 +15,4 @@ bot = commands.Bot(command_prefix='>', intents=intents)
 async def ping(ctx):
     await ctx.send('pong')
 
-bot.run(token)
+bot.run(str(token))
