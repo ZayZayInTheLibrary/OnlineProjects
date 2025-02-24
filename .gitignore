@@ -1,2 +1,4 @@
 .env
 discBotEnv/
+flaskEnv/
+__pycache__
