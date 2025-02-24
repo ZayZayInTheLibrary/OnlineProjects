@@ -35,6 +35,8 @@ class RGBCog(commands.Cog):
         await interaction.response.send_message(RGB)
         #await interaction.response.send_embed(title="Test", description="More Testing")
 
+
+# Sets up the bot
 async def setup(bot):
     await bot.add_cog(RGBCog(bot))
     print("RGB Cog loaded!")
