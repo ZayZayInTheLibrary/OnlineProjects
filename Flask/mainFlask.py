@@ -7,18 +7,74 @@ import requests
 load_dotenv()
 
 SECRET = os.getenv("DISC_SECRET")
+BOT_TOKEN = os.getenv("DISC_TOKEN")
 
 app = Flask(__name__)
 
 CLIENT_ID = "1341545136110305310"
 CLIENT_SECRET = SECRET
-REDIRECT_URI = "https://5000-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com/callback"
+REDIRECT_URI = "https://8080-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com/callback"
+TOKEN_REDIRECT_URI = "https://8080-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com/get_token"
 
-DISCORD_OAUTH2_URL = "https://discord.com/oauth2/authorize?client_id=1341545136110305310&permissions=8&response_type=code&redirect_uri=https%3A%2F%2F5000-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com%2Fcallback&integration_type=0&scope=identify+applications.commands+applications.commands.permissions.update+bot"
+
+#Generate a OAuth2 URL from Discord Developer Portal using client ID, Redirecting to the callback URL.
+DISCORD_OAUTH2_URL = "https://discord.com/oauth2/authorize?client_id=1341545136110305310&permissions=8&response_type=code&redirect_uri=https%3A%2F%8080-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com%2Fcallback&integration_type=0&scope=identify+applications.commands+applications.commands.permissions.update+bot"
 
 @app.route("/")
 def home():
     return render_template("home.html")
+
+@app.route("/perms")
+def perms():
+    return render_template("perms.html")
+
+
+@app.route("/get_token")
+def getToken():
+    token_url = "https://discord.com/api/oauth2/token"
+        # Get the 'code' sent by Discord
+    code = request.args.get("code")
+    if not code:
+        return "Error: No code provided.", 400
+    data = {
+        "client_id": CLIENT_ID,
+        "client_secret": CLIENT_SECRET,
+        "grant_type": "authorization_code",
+        "code": code,
+        "redirect_uri": TOKEN_REDIRECT_URI
+    }
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    response = requests.post(token_url, data=data, headers=headers)
+    token_info = response.json()
+
+    # Check for access token in the response
+    if "access_token" not in token_info:
+        return f"Error: {token_info}", 400
+
+    access_token = token_info["access_token"]
+
+    # Use the access token to get user info
+    user_info_url = "https://discord.com/api/users/@me"
+    headers = {"Authorization": f"Bearer {access_token}"}
+    user_info = requests.get(user_info_url, headers=headers).json()
+
+    # Use the access token to get application info
+    application_headers = {"Authorization": f"Bot {BOT_TOKEN}"}
+    application_info_url = "https://discord.com/api/oauth2/applications/@me"
+    application_info = requests.get(application_info_url, headers=application_headers).json()
+
+    # Display user info
+    #return f"Logged in as {user_info['username']}#{user_info['discriminator']}"
+    print(user_info)
+    print("\n\n\n")
+    print(application_info)
+    print("\n\n\n")
+    print(access_token)
+    return f"Logged in as {user_info['username']}\nBot Owner:{application_info['owner']['username']}"
+
+
 
 @app.route("/add_bot")
 def login():
@@ -62,4 +118,4 @@ def callback():
     return f"Logged in as {user_info['username']}#{user_info['discriminator']}"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
