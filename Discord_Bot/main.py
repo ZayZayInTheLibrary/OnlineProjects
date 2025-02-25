@@ -43,13 +43,11 @@ async def reload(interaction: discord.Interaction):
     except Exception as e:
         await interaction.followup.send(f"An error occurred while reloading commands: {str(e)}")
     # Reload the extension to pick up changes
-    # Reload the module to apply changes
-    # Sync the commands for the specific guild (server)
     try:
-        #guild = discord.Object(id=1341546870740095006)
         await bot.tree.sync()
-        await interaction.followup.send("Reloaded Commands!")  # Use followup
         end = time.time() 
+        cmd_resp = await interaction.followup.send(f"Reloaded Commands in {round(end - begin)} seconds!", ephemeral=True)
+        await cmd_resp.delete(delay=2)
         print(f"Total runtime for reload was {end - begin}")
     except Exception as e:
         await interaction.followup.send(f"Error syncing: {e}")
