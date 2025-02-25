@@ -2,8 +2,19 @@ import os
 import sys
 import discord
 from discord.ext import commands
+from PIL import Image
 
 bot = commands.Bot(command_prefix=">", intents=discord.Intents.default())
+
+
+def generate_color_image(color, width=200, height=200):
+    # Create a new image with the specified color
+    img = Image.new("RGB", (width, height), color)
+    filename = f"color_{color}.png"
+    # Save the image
+    img.save(filename) 
+    return(f'color_{color}.png')
+
 
 #Get MainRGB.py for pulling function.
 funcPath = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..', 'Name_To_RGB'))
@@ -32,11 +43,18 @@ class RGBCog(commands.Cog):
     @bot.tree.command(name="name2rgb", description="Converts a name to RGB values.")
     async def name2rgb(self, interaction: discord.Interaction, name: str):
         RGB = textToRGB(name)
-        await interaction.response.send_message(RGB)
-        #await interaction.response.send_embed(title="Test", description="More Testing")
+        hexd = '#%02x%02x%02x' % RGB
+        hexdInt = hexd.replace("#", "")
+        hexdInt = int(hexdInt, 16)
+        img = generate_color_image(hexd)
+        file = discord.File(img, filename=f"color.png")
+        embed = discord.Embed(title=f"{name}: <:gun:1343745716673314856>", description=f"{name}'s color is\nRGB: {RGB}\nHEX: {hexd}",color=hexdInt)
+        embed.set_thumbnail(url="attachment://color.png")
+        await interaction.response.send_message(embed=embed, file=file)
+        os.remove(img)
 
 
 # Sets up the bot
 async def setup(bot):
     await bot.add_cog(RGBCog(bot))
-    print("RGB Cog loaded!")
+    print("RGB Cog Loaded/Updated!")
