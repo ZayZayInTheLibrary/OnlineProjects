@@ -2,3 +2,4 @@
 discBotEnv/
 flaskEnv/
 __pycache__
+command_ids.py
