@@ -1,7 +1,7 @@
 import os
 import sys
 from dotenv import load_dotenv
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, render_template
 import requests
 
 load_dotenv()
@@ -14,10 +14,13 @@ CLIENT_ID = "1341545136110305310"
 CLIENT_SECRET = SECRET
 REDIRECT_URI = "https://5000-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com/callback"
 
-DISCORD_OAUTH2_URL = "https://discord.com/oauth2/authorize?client_id=1341545136110305310&response_type=code&redirect_uri=https%3A%2F%2F5000-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com%2Fcallback&integration_type=0&scope=identify+applications.commands+applications.commands.permissions.update"
-
+DISCORD_OAUTH2_URL = "https://discord.com/oauth2/authorize?client_id=1341545136110305310&permissions=8&response_type=code&redirect_uri=https%3A%2F%2F5000-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com%2Fcallback&integration_type=0&scope=identify+applications.commands+applications.commands.permissions.update+bot"
 
 @app.route("/")
+def home():
+    return render_template("home.html")
+
+@app.route("/add_bot")
 def login():
     return redirect(DISCORD_OAUTH2_URL)
 
