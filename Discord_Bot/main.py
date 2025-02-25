@@ -7,6 +7,8 @@ import importlib
 from discord.ext import commands
 load_dotenv()
 
+
+
 #Import Commands From Other Files
 commands_dir = os.path.join(os.path.dirname(__file__), "botCommands")
 import botCommands.rgb
@@ -19,11 +21,14 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='>', intents=intents)
 
 
-@discord.ext.commands.command(name="ping", description="Get bot response time.")
+@bot.tree.command(name="ping", description="Get bot response time.")
 async def ping(interaction: discord.Interaction):
     latency = bot.latency * 1000  # Convert to milliseconds
     await interaction.response.send_message(f"Pong! Latency is {latency:.2f}ms.")
+
+    
 @bot.tree.command(name="reload", description="Reloads the commands for a specific server.")
+@app_commands.default_permissions(administrator=True)
 async def reload(interaction: discord.Interaction):
     begin = time.time()
     await interaction.response.defer(thinking=True)
@@ -52,6 +57,12 @@ async def reload(interaction: discord.Interaction):
     except Exception as e:
         await interaction.followup.send(f"Error syncing: {e}")
 
+
+reload_command = "1341582119113064501"
+guild_id = "1341546870740095006"
+admin_role_id = "1341575018865492111"
+everyone_role_id = "1341546870740095006"
+
 #When Bot Is Ready Run
 @bot.event
 async def on_ready():
@@ -67,6 +78,5 @@ async def on_ready():
         print(f"Error loading cog: {e}")
     await bot.tree.sync(guild=guild)
     await bot.tree.sync()
-
 
 bot.run(str(token))
