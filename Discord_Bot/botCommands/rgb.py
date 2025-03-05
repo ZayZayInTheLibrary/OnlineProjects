@@ -1,11 +1,13 @@
 import os
 import sys
 import discord
+import json
+import requests
 from discord.ext import commands
 from PIL import Image
 
 bot = commands.Bot(command_prefix=">", intents=discord.Intents.default())
-
+colorAPI = " https://www.thecolorapi.com/id"
 
 def generate_color_image(color, width=200, height=200):
     # Create a new image with the specified color
@@ -46,9 +48,19 @@ class RGBCog(commands.Cog):
         hexd = '#%02x%02x%02x' % RGB
         hexdInt = hexd.replace("#", "")
         hexdInt = int(hexdInt, 16)
+        # Sets up for The Color API to retrieve name Color #
+        rgb_ = str(RGB).replace(" ", "")
+        params = {"rgb": rgb_, "format": "json"}
+        colorResponse = requests.get(colorAPI, params=params)
+
+        if colorResponse.status_code == 200:
+            colorData = colorResponse.json()
+            colorName = colorData.get("name", {}).get("value", "Unknown Color")
+        else:
+            print(f"Error: {colorResponse.status_code}")
         img = generate_color_image(hexd)
         file = discord.File(img, filename=f"color.png")
-        embed = discord.Embed(title=f"{name}: <:gun:1343745716673314856>", description=f"{name}'s color is\nRGB: {RGB}\nHEX: {hexd}",color=hexdInt)
+        embed = discord.Embed(title=f"{name}: <:gun:1343745716673314856>", description=f"{name}'s color is {colorName}\nRGB: {RGB}\nHEX: {hexd}",color=hexdInt)
         embed.set_thumbnail(url="attachment://color.png")
         await interaction.response.send_message(embed=embed, file=file)
         os.remove(img)
