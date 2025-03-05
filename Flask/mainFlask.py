@@ -3,6 +3,7 @@ import sys
 from dotenv import load_dotenv
 from flask import Flask, request, redirect, render_template
 import requests
+import json
 
 load_dotenv()
 
@@ -18,7 +19,7 @@ TOKEN_REDIRECT_URI = "https://8080-zayzayinthelibrary-onlin-9p19d5303m.app.codea
 
 
 #Generate a OAuth2 URL from Discord Developer Portal using client ID, Redirecting to the callback URL.
-DISCORD_OAUTH2_URL = "https://discord.com/oauth2/authorize?client_id=1341545136110305310&permissions=8&response_type=code&redirect_uri=https%3A%2F%8080-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com%2Fcallback&integration_type=0&scope=identify+applications.commands+applications.commands.permissions.update+bot"
+DISCORD_OAUTH2_URL = "https://discord.com/oauth2/authorize?client_id=1341545136110305310&permissions=0&response_type=code&redirect_uri=https%3A%2F%2F8080-zayzayinthelibrary-onlin-9p19d5303m.app.codeanywhere.com%2Fcallback&integration_type=0&scope=identify+bot+applications.commands.permissions.update+applications.commands"
 
 @app.route("/")
 def home():
@@ -67,11 +68,13 @@ def getToken():
 
     # Display user info
     #return f"Logged in as {user_info['username']}#{user_info['discriminator']}"
-    print(user_info)
-    print("\n\n\n")
-    print(application_info)
-    print("\n\n\n")
-    print(access_token)
+    token_write_data = {
+        "application_info": application_info,
+        "user_info": user_info
+    }
+
+    with open("token_data.json", "w") as file:
+        json.dump(token_write_data, file, indent=4)
     return f"Logged in as {user_info['username']}\nBot Owner:{application_info['owner']['username']}"
 
 
@@ -114,8 +117,16 @@ def callback():
     headers = {"Authorization": f"Bearer {access_token}"}
     user_info = requests.get(user_info_url, headers=headers).json()
 
+    write_data = {
+        "access_token": access_token,
+        "user_info": user_info
+    }
+
+    with open("data.json", "w") as file:
+        json.dump(write_data, file, indent=4)
+
     # Display user info
     return f"Logged in as {user_info['username']}#{user_info['discriminator']}"
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    app.run(host='0.0.0.0', debug=True, port=8080)
